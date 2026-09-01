@@ -12,13 +12,13 @@ export const testEmails: { label: string; email: EmailInput }[] = [
     },
   },
   {
-    label: 'Low-Risk Weak Signal',
+    label: 'Attachment-Based',
     email: {
-      sender: 'news@asana.com',
-      subject: 'New collaboration ideas for your team',
-      body: 'Hello Jordan,\n\nFor a limited time, explore a few optional collaboration templates.\n\nThe Asana Team',
-      links: [],
-      attachments: [],
+      sender: 'billing@acme.example',
+      subject: 'Invoice available for review',
+      body: 'Hello Jordan,\n\nYour invoice is attached for your records. Review it at your convenience.\n\nAcme Accounts Team',
+      links: [{ displayText: 'http://billing.example.com/invoice', href: 'http://billing.example.com/invoice' }],
+      attachments: [{ name: 'invoice.pdf.exe', extension: 'pdf' }],
     },
   },
   {

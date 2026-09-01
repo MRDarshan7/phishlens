@@ -21,9 +21,9 @@ for (const [index, result] of results.entries()) {
 const clean = results[0];
 assert(clean.indicators.length === 0 && clean.score === 0 && clean.verdict === 'low' && clean.evidenceStrength === 'weak', 'clean scenario mismatch');
 
-const lowRisk = results[1];
-assert(lowRisk.score === 8 && lowRisk.verdict === 'low' && lowRisk.evidenceStrength === 'weak', 'low-risk scenario mismatch');
-assert(lowRisk.indicators.map(({ id }) => id).includes('urgency-limited-time'), 'low-risk urgency indicator missing');
+const attachmentBased = results[1];
+assert(attachmentBased.score === 25 && attachmentBased.verdict === 'medium' && attachmentBased.evidenceStrength === 'strong', 'attachment scenario mismatch');
+assert(attachmentBased.indicators.map(({ id }) => id).includes('dangerous-attachment-extension'), 'attachment indicator missing');
 
 const borderline = results[2];
 assert(borderline.score === 10 && borderline.verdict === 'low' && borderline.evidenceStrength === 'weak', 'borderline scenario mismatch');
