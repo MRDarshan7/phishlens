@@ -14,11 +14,13 @@ interface EmailPaneProps {
   analyzing: boolean;
 }
 
-function fieldValue(indicator: Indicator, field: 'sender' | 'subject' | 'body') {
+type HighlightField = 'sender' | 'subject' | 'body' | 'url';
+
+function fieldValue(indicator: Indicator, field: HighlightField) {
   return indicator.location?.field === field ? indicator : null;
 }
 
-function highlightedText(text: string, field: 'sender' | 'subject' | 'body', indicators: Indicator[]): ReactNode {
+function highlightedText(text: string, field: HighlightField, indicators: Indicator[]): ReactNode {
   const spans = indicators
     .filter((indicator) => fieldValue(indicator, field) && indicator.location)
     .map((indicator) => ({ indicator, start: indicator.location!.startIndex, end: indicator.location!.endIndex }))
@@ -28,6 +30,7 @@ function highlightedText(text: string, field: 'sender' | 'subject' | 'body', ind
   const parts: ReactNode[] = [];
   let cursor = 0;
   for (const span of spans) {
+    // Overlapping spans cannot be nested safely; severity order makes the choice deterministic.
     if (span.start < cursor) continue;
     if (span.start > cursor) parts.push(text.slice(cursor, span.start));
     parts.push(
@@ -78,8 +81,8 @@ export function EmailPane({ email, result, queue, selectedIndex, onSelect, onCha
           </div>
         )}
         <div className="email-meta">
-          <label><span>FROM</span><input value={email.sender} onChange={(event) => onChange(updateField(email, 'sender', event))} aria-label="Sender" /></label>
-          <label><span>SUBJECT</span><input value={email.subject} onChange={(event) => onChange(updateField(email, 'subject', event))} aria-label="Subject" /></label>
+          {result ? <div className="technical-field"><span>FROM</span><div className="technical-value">{highlightedText(email.sender, 'sender', indicators)}</div></div> : <label><span>FROM</span><input value={email.sender} onChange={(event) => onChange(updateField(email, 'sender', event))} aria-label="Sender" /></label>}
+          {result ? <div className="technical-field"><span>SUBJECT</span><div className="technical-value">{highlightedText(email.subject, 'subject', indicators)}</div></div> : <label><span>SUBJECT</span><input value={email.subject} onChange={(event) => onChange(updateField(email, 'subject', event))} aria-label="Subject" /></label>}
           {result && <label><span>TIMESTAMP</span><span className="technical-value">{new Date(result.timestamp).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</span></label>}
         </div>
         <div className="email-body-wrap">
@@ -87,7 +90,7 @@ export function EmailPane({ email, result, queue, selectedIndex, onSelect, onCha
           {result ? <div className="raw-email body-copy">{highlightedText(email.body, 'body', indicators)}</div> : <textarea className="raw-editor" value={email.body} onChange={(event) => onChange(updateField(email, 'body', event))} aria-label="Email body" rows={11} />}
         </div>
         <div className="email-assets">
-          <div><span className="eyebrow">LINKS</span>{email.links.length ? email.links.map((link) => <a className="technical-link" href={link.href} target="_blank" rel="noreferrer" key={`${link.displayText}-${link.href}`}>{link.displayText}<span className="link-href">{link.href}</span></a>) : <span className="muted">No links attached</span>}</div>
+          <div><span className="eyebrow">LINKS</span>{email.links.length ? email.links.map((link) => <a className="technical-link" href={link.href} target="_blank" rel="noreferrer" key={`${link.displayText}-${link.href}`}>{link.displayText}<span className="link-href">{highlightedText(link.href, 'url', indicators)}</span></a>) : <span className="muted">No links attached</span>}</div>
           <div><span className="eyebrow">ATTACHMENTS</span>{email.attachments.length ? email.attachments.map((attachment) => <span className="attachment-row" key={attachment.name}><span>↳ {attachment.name}</span><span className="mono muted">.{attachment.extension}</span></span>) : <span className="muted">No attachments</span>}</div>
         </div>
       </div>
