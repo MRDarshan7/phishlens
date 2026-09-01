@@ -52,7 +52,7 @@ export const testEmails: { label: string; email: EmailInput }[] = [
       body: 'Please verify immediately. Your account will be suspended unless you complete this check.',
       links: [
         { displayText: 'https://paypal.com', href: 'http://paypa1-login.com/verify' },
-        { displayText: 'http://192.168.1.20/verify', href: 'http://192.168.1.20/verify' },
+        { displayText: 'http://192.168.123.250/verify', href: 'http://192.168.123.250/verify' },
       ],
       attachments: [{ name: 'account-review.pdf.exe', extension: 'pdf' }],
     },
